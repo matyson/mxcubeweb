@@ -34,6 +34,8 @@ export default function GridForm(props) {
     removeGrid,
     rotateTo,
     saveGrid,
+    gridColor,
+    changeGridColor,
     selectedGrids,
     setHCellSpacing,
     setVCellSpacing,
@@ -180,7 +182,13 @@ export default function GridForm(props) {
         <td />
         <td />
         <td />
-        <td />
+        <td>
+          <input
+            type="color"
+            defaultValue={gridColor}
+            onChange={(e) => changeGridColor(e.target.value)}
+          />
+        </td>
         <td>
           <Button
             // we want these buttons to have the same size. Additionally we want to assign them more space when there are additional controls shown.

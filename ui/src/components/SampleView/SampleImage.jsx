@@ -75,6 +75,9 @@ class SampleImage extends React.Component {
     this._keyPressed = null;
     this.player = null;
     this.removeShapes = this.removeShapes.bind(this);
+    this.changeGridColor = this.drawGridPlugin.setCurrentGridColor.bind(
+      this.drawGridPlugin,
+    );
   }
 
   componentDidMount() {
@@ -953,6 +956,8 @@ class SampleImage extends React.Component {
               rotateTo={this.props.rotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
+              gridColor={this.drawGridPlugin.colors.drawing}
+              changeGridColor={this.changeGridColor}
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
 

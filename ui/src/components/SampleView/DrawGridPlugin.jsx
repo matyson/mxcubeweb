@@ -175,6 +175,20 @@ export default class DrawGridPlugin {
     this.resultType = 'heatmap';
     this.gridResultFormat = 'PNG';
     this.canvas = null;
+    this.colors = {
+      selected: '#88ff5b', // green
+      unselected: '#e4ff09', // yellow
+      drawing: '#fff58a', // light yellow
+    };
+  }
+
+  /**
+   * Sets current grid color, in hex format AABBCC
+   *
+   * @param {string} color
+   */
+  setCurrentGridColor(color) {
+    this.colors.drawing = color;
   }
 
   /**
@@ -446,8 +460,9 @@ export default class DrawGridPlugin {
    * or if we are drawing in small cell size' mode.
    */
   addInnerLines(shapes, gridData, left, top, height, width, cellTH, cellTW) {
-    if (!gridData.selected) {
-      /* we only draw inner lines for selected meshes */
+    const isBeingDrawn = this.drawing && gridData.id === null;
+    if (!gridData.selected && !isBeingDrawn) {
+      /* we only draw inner lines for selected meshes or the one being drawn */
       return;
     }
 
@@ -456,7 +471,7 @@ export default class DrawGridPlugin {
       return;
     }
 
-    const lineColor = 'rgba(136, 255, 91, 0.5)';
+    const lineColor = isBeingDrawn ? this.colors.drawing : this.colors.selected;
     const strokeArray = [5, 5];
 
     for (let nw = 1; nw < gridData.numCols; nw++) {
@@ -518,9 +533,10 @@ export default class DrawGridPlugin {
     const width = cellTW * gridData.numCols;
 
     let color = gridData.selected
-      ? 'rgba(136, 255, 91, 1)'
-      : 'rgba(228, 255, 9, 0.5)';
-    color = gridData.result?.length > 0 ? 'rgba(228, 255, 9, 1)' : color;
+      ? this.colors.selected
+      : this.colors.unselected;
+
+    color = gridData.result?.length > 0 ? this.colors.unselected : color;
     const outlineStrokeArray = gridData.selected ? [] : [5, 5];
 
     if (cellTW > 0 && cellTH > 0) {
@@ -595,15 +611,16 @@ export default class DrawGridPlugin {
       }
     }
 
+    const isBeingDrawn = this.drawing && gridData.id === null;
     shapes.push(
       new fabric.Rect({
         left,
         top,
         width,
         height,
-        fill: 'rgba(0,0,0,0)',
+        fill: isBeingDrawn ? `${this.colors.drawing}4D` : '#00000000',
         strokeDashArray: outlineStrokeArray,
-        stroke: color,
+        stroke: isBeingDrawn ? this.colors.drawing : color,
         hasControls: false,
         selectable: true,
         hoverCursor: 'pointer',
